@@ -1,20 +1,24 @@
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 import seaborn as sns
+import matplotlib.pyplot as plt
 
-class Outliers():
+
+class Outliers:
     def __init__(self, limit_factor=1.5):
         self.limit_factor = limit_factor
+        self.data = None
+        self.numeric_columns = None
+        self.lower_limit_dict = {}
+        self.upper_limit_dict = {}
+        self.iqr = {}
+        self.outlier_counts = {}
         
     def fit(self, data):
         try:
             self.data = data 
             self.numeric_columns = self.data.select_dtypes(include=[np.number]).columns
-            self.lower_limit_dict = {}
-            self.upper_limit_dict = {}
-            self.iqr = {}
-
+            
             for col in self.numeric_columns:
                 q1, q3 = self.data[col].quantile([0.25, 0.75])
                 iqr = q3 - q1
@@ -40,8 +44,6 @@ class Outliers():
     
     def plot_outlier_count(self, column_name_list=None, figsize=(10,8)):
         try:
-            self.outlier_counts = {}
-
             if column_name_list is None:
                 column_name_list = self.numeric_columns
             else:
@@ -50,8 +52,7 @@ class Outliers():
             for name in column_name_list:
                 filtered_df = self.filter_outlier(name)
                 if isinstance(filtered_df, pd.DataFrame):
-                    count = filtered_df.shape[0]
-                    self.outlier_counts[name] = count
+                    self.outlier_counts[name] = filtered_df.shape[0]
 
             if not self.outlier_counts:
                 return "No outlier found for given columns"
@@ -71,18 +72,15 @@ class Outliers():
         except Exception as e:
             return f"Error occurred in plot_outlier_count(): {e}"
 
-        def get_outlier_proportion(self, column_name_list=None):
-            try:
-                if self.outlier_counts:
-                    outlier_proportions_dict={}
-                    total_rows = self.data.shape[0]
-                    for key, value in self.outlier_counts.items():
-                        proportion = round(value * 100 / total_rows, 2)
-                        outlier_proportions_dict[key] = proportion
-                    return outlier_proportions_dict
-                else:
-                    return "No outlier found for given columns"
-            except Exception as e:
-                return f"Error occurred in get_outlier_proportion(): {e}"
-        
-
+    def get_outlier_proportion(self, column_name_list=None):
+        try:
+            if not self.outlier_counts:
+                return "No outlier found for given columns"
+                
+            total_rows = self.data.shape[0]
+            outlier_proportions_dict = {key: round(value * 100 / total_rows, 2) 
+                                        for key, value in self.outlier_counts.items()}
+            return outlier_proportions_dict
+            
+        except Exception as e:
+            return f"Error occurred in get_outlier_proportion(): {e}"

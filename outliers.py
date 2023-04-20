@@ -9,7 +9,7 @@ class Outliers():
         
     def fit(self, data):
         try:
-            self.data = data  # store input df as an instance variable
+            self.data = data 
             self.numeric_columns = self.data.select_dtypes(include=[np.number]).columns
             self.lower_limit_dict = {}
             self.upper_limit_dict = {}
@@ -57,10 +57,32 @@ class Outliers():
                 return "No outlier found for given columns"
 
             plt.figure(figsize=figsize)
-            sns.barplot(x=list(self.outlier_counts.keys()), y=list(self.outlier_counts.values()))
+            ax = sns.barplot(x=list(self.outlier_counts.keys()), y=list(self.outlier_counts.values()))
             plt.title('Outlier counts'.title(), fontsize=15, fontweight='bold')
             plt.xticks(rotation=90)
+            plt.ylim(top=max(self.outlier_counts.values())*1.1) # set y-axis limit to fit the text annotations
+
+            # add text annotations above each bar
+            for i, v in enumerate(self.outlier_counts.values()):
+                ax.text(i, v+max(self.outlier_counts.values())*0.05, str(v), color='black', ha='center', fontsize=10, fontweight='bold')
+
             plt.show()
 
         except Exception as e:
             return f"Error occurred in plot_outlier_count(): {e}"
+
+        def get_outlier_proportion(self, column_name_list=None):
+            try:
+                if self.outlier_counts:
+                    outlier_proportions_dict={}
+                    total_rows = self.data.shape[0]
+                    for key, value in self.outlier_counts.items():
+                        proportion = round(value * 100 / total_rows, 2)
+                        outlier_proportions_dict[key] = proportion
+                    return outlier_proportions_dict
+                else:
+                    return "No outlier found for given columns"
+            except Exception as e:
+                return f"Error occurred in get_outlier_proportion(): {e}"
+        
+

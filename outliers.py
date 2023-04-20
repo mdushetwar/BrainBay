@@ -30,6 +30,24 @@ class Outliers:
         
         except Exception as e:
             return f"Error occurred in fit(): {e}"
+
+    def get_iqr(self, column_names=None):
+        try:
+            if column_names is None:
+                return pd.Series(self.iqr)
+            else:
+                if not set(column_names).issubset(set(self.numeric_columns)):
+                    return f"Error: Invalid column names provided. Please provide column names that are numerical and exist in the dataset: {self.numeric_columns.tolist()}"
+
+                iqr_dict={}
+                for key, value in self.iqr.items():
+                    if key in column_names:
+                        iqr_dict[key]=value
+                return pd.Series(iqr_dict)
+
+        except Exception as e:
+            return f"Error occurred in get_iqr(): {e}"
+
     
     def filter_outlier(self, column_name):
         try:
@@ -80,7 +98,7 @@ class Outliers:
             total_rows = self.data.shape[0]
             outlier_proportions_dict = {key: round(value * 100 / total_rows, 2) 
                                         for key, value in self.outlier_counts.items()}
-            return outlier_proportions_dict
+            return pd.Series(outlier_proportions_dict)
             
         except Exception as e:
             return f"Error occurred in get_outlier_proportion(): {e}"

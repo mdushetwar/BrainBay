@@ -70,14 +70,23 @@ class Outliers:
             return f"Error occurred in get_limits(): {e}"
 
     
-    def filter_outlier(self, column_name):
-        try:
-            filtered_df = self.data[(self.data[column_name] < self.lower_limit_dict[column_name]) |
-                                     (self.data[column_name] > self.upper_limit_dict[column_name])]
-            return filtered_df
+    def get_outliers(self, column_name):
         
-        except KeyError:
-            return f"Column name {column_name} does not exist"
+        try:
+            if column_name not in self.numeric_columns:
+                return f"Column name '{column_name}' is either not numeric or does not exist in the dataset"
+
+            try:
+                filtered_df = self.data[(self.data[column_name] < self.lower_limit_dict[column_name]) |
+                                         (self.data[column_name] > self.upper_limit_dict[column_name])]
+
+                # Highlight filtered column in the resulting filtered_df
+                filtered_df = filtered_df.style.applymap(lambda x: 'background-color: yellow', subset=pd.IndexSlice[:, [column_name]])
+
+                return filtered_df
+            except Exception as e:
+                return f"Error occurred in filter_outlier(): {e}"
+
         except Exception as e:
             return f"Error occurred in filter_outlier(): {e}"
     

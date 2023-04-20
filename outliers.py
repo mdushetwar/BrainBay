@@ -48,6 +48,27 @@ class Outliers:
         except Exception as e:
             return f"Error occurred in get_iqr(): {e}"
 
+    def get_limits(self, column_names=None, decimal=4):
+        try:
+            if column_names is None:
+                column_names = self.numeric_columns
+            else:
+                invalid_columns = set(column_names) - set(self.numeric_columns)
+                if invalid_columns:
+                    return f"Invalid column name(s): {invalid_columns}. Numeric columns: {self.numeric_columns}"
+            
+            limits = {}
+            for name in column_names:
+                try:
+                    limits[name] = [round(self.lower_limit_dict[name], decimal), round(self.upper_limit_dict[name], decimal)]
+                except KeyError:
+                    return f"Column name {name} does not exist or is not numeric"
+                    
+            return limits
+        
+        except Exception as e:
+            return f"Error occurred in get_limits(): {e}"
+
     
     def filter_outlier(self, column_name):
         try:
@@ -90,13 +111,13 @@ class Outliers:
         except Exception as e:
             return f"Error occurred in plot_outlier_count(): {e}"
 
-    def get_outlier_proportion(self, column_name_list=None):
+    def get_outlier_proportion(self, column_name_list=None, decimal=2):
         try:
             if not self.outlier_counts:
                 return "No outlier found for given columns"
                 
             total_rows = self.data.shape[0]
-            outlier_proportions_dict = {key: round(value * 100 / total_rows, 2) 
+            outlier_proportions_dict = {key: round(value * 100 / total_rows, decimal) 
                                         for key, value in self.outlier_counts.items()}
             return pd.Series(outlier_proportions_dict)
             

@@ -4,6 +4,7 @@ MGD_Outliers is an open-source Python package for detecting and analyzing outlie
 # Installation
 
 You can install MGD_Outliers using pip:
+
     ''' 
     pip install MGD_Outliers
     '''
@@ -11,21 +12,25 @@ You can install MGD_Outliers using pip:
 # Usage
 
 To use the Outliers class in MGD_Outliers, you first need to import the package:
+
     '''
     import MGD_Outliers
     '''
 
 Then, you can create an instance of the Outliers class and pass your data to it:
+
     '''
     outliers = MGD_Outliers.Outliers(data)
     '''
 
 Once you have an instance of the Outliers class, you can use its methods to detect and analyze outliers. For example, you can use the detect_outliers method to detect outliers in the data:
+
     '''
     outliers.get_outliers()
     '''
 
 You can also use the plot_outlier_count method to plot barplot of the columns with the detected outliers highlighted:
+
     '''
     outliers.plot_outlier_count()
     '''

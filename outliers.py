@@ -100,7 +100,7 @@ class Outliers:
             
             
 
-    def get_outlier_count(self, column_names=None):
+    def get_outliers_count(self, column_names=None, kind='num', decimal=2):
         
         if column_names is None:
             column_names = self.numeric_columns
@@ -123,7 +123,16 @@ class Outliers:
         if not outlier_counts:
             return "No outlier found for given columns"
 
-        return pd.Series(outlier_counts)
+        if kind=='num':
+            return pd.Series(outlier_counts)
+        elif kind=='perc':
+            total_rows = self.data.shape[0]
+            outlier_proportions_dict = {key: round(value * 100 / total_rows, decimal) 
+                                        for key, value in outlier_counts.items()}
+            return pd.Series(outlier_proportions_dict)
+        else:
+            raise ValueError(f"Invalid input for kind. only take 'num' & 'perc'")
+
 
     
     def plot_outlier_count(self, column_names=None, figsize=(10, 8), threshold_percent=5):
@@ -161,20 +170,6 @@ class Outliers:
 
         plt.show()
 
-
-
-    def get_outlier_proportion(self, column_name_list=None, decimal=2):
-        try:
-            if not self.outlier_counts:
-                return "No outlier found for given columns"
-                
-            total_rows = self.data.shape[0]
-            outlier_proportions_dict = {key: round(value * 100 / total_rows, decimal) 
-                                        for key, value in self.outlier_counts.items()}
-            return pd.Series(outlier_proportions_dict)
-            
-        except Exception as e:
-            return f"Error occurred in get_outlier_proportion(): {e}"
 
     def drop_outliers(self, column_names=None):
         if column_names is None:

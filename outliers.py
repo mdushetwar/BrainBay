@@ -7,24 +7,23 @@ import matplotlib.pyplot as plt
 class Outliers:
     def __init__(self, limit_factor=1.5):
         self.limit_factor = limit_factor
-        self.data = None
+        self.__data = None
         self.numeric_columns = None
-        self.lower_limit_dict = {}
-        self.upper_limit_dict = {}
-        self.iqr = {}
-        self.outlier_counts = {}
+        self.__lower_limit_dict = {}
+        self.__upper_limit_dict = {}
+        self.__iqr = {}
         
     def fit(self, data):
         try:
-            self.data = data 
-            self.numeric_columns = self.data.select_dtypes(include=[np.number]).columns
+            self.__data = data 
+            self.numeric_columns = self.__data.select_dtypes(include=[np.number]).columns
             
             for col in self.numeric_columns:
-                q1, q3 = self.data[col].quantile([0.25, 0.75])
-                iqr = q3 - q1
-                self.lower_limit_dict[col] = q1 - self.limit_factor * iqr
-                self.upper_limit_dict[col] = q3 + self.limit_factor * iqr
-                self.iqr[col] = iqr
+                q1, q3 = self.__data[col].quantile([0.25, 0.75])
+                val_iqr = q3 - q1
+                self.__lower_limit_dict[col] = q1 - self.limit_factor * val_iqr
+                self.__upper_limit_dict[col] = q3 + self.limit_factor * val_iqr
+                self.__iqr[col] = val_iqr
 
             return 'Upper and lower limits identified successfully!'
         
@@ -45,7 +44,7 @@ class Outliers:
             column_names = [col for col in column_names if col in self.numeric_columns]
         
         iqr_dict={}
-        for key, value in self.iqr.items():
+        for key, value in self.__iqr.items():
             if key in column_names:
                 iqr_dict[key]=value
         return pd.Series(iqr_dict)
@@ -67,7 +66,7 @@ class Outliers:
         limits = {}
         for name in column_names:
             try:
-                limits[name] = [round(self.lower_limit_dict[name], decimal), round(self.upper_limit_dict[name], decimal)]
+                limits[name] = [round(self.__lower_limit_dict[name], decimal), round(self.__upper_limit_dict[name], decimal)]
             except KeyError:
                 return f"Column name {name} does not exist or is not numeric"
 
@@ -84,8 +83,8 @@ class Outliers:
 
     
         try:
-            filtered_df = self.data[(self.data[column_name] < self.lower_limit_dict[column_name]) |
-                                    (self.data[column_name] > self.upper_limit_dict[column_name])]
+            filtered_df = self.__data[(self.__data[column_name] < self.__lower_limit_dict[column_name]) |
+                                    (self.__data[column_name] > self.__upper_limit_dict[column_name])]
 
             # Highlight selected column in the resulting filtered_df
             filtered_df_style = filtered_df.style.applymap(lambda x: 'background-color: yellow', subset=pd.IndexSlice[:, [column_name]])
@@ -126,7 +125,7 @@ class Outliers:
         if kind=='num':
             return pd.Series(outlier_counts)
         elif kind=='perc':
-            total_rows = self.data.shape[0]
+            total_rows = self.__data.shape[0]
             outlier_proportions_dict = {key: round(value * 100 / total_rows, decimal) 
                                         for key, value in outlier_counts.items()}
             return pd.Series(outlier_proportions_dict)
@@ -159,7 +158,7 @@ class Outliers:
 
         plt.figure(figsize=figsize)
         ax = sns.barplot(x=list(outlier_counts.keys()), y=list(outlier_counts.values()))
-        plt.axhline(int(self.data.shape[0]*threshold_percent/100), linestyle='--', color='r')
+        plt.axhline(int(self.__data.shape[0]*threshold_percent/100), linestyle='--', color='r')
         plt.title('Outlier counts'.title(), fontsize=15, fontweight='bold')
         plt.xticks(rotation=90)
         plt.ylim(top=max(outlier_counts.values())*1.1) # set y-axis limit to fit the text annotations
@@ -189,7 +188,7 @@ class Outliers:
             if isinstance(filtered_df, pd.DataFrame):
                 index = index + list(filtered_df.index)
         
-        no_outlier_data=self.data.drop(index=np.unique(index))
+        no_outlier_data=self.__data.drop(index=np.unique(index))
         return no_outlier_data
 
         

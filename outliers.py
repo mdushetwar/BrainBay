@@ -52,25 +52,26 @@ class Outliers:
 
 
     def get_limits(self, column_names=None, decimal=4):
-        try:
-            if column_names is None:
-                column_names = self.numeric_columns
-            else:
-                invalid_columns = set(column_names) - set(self.numeric_columns)
-                if invalid_columns:
-                    return f"Invalid column name(s): {invalid_columns}. Numeric columns: {self.numeric_columns}"
-            
-            limits = {}
-            for name in column_names:
-                try:
-                    limits[name] = [round(self.lower_limit_dict[name], decimal), round(self.upper_limit_dict[name], decimal)]
-                except KeyError:
-                    return f"Column name {name} does not exist or is not numeric"
-                    
-            return limits
         
-        except Exception as e:
-            return f"Error occurred in get_limits(): {e}"
+        if column_names is None:
+            column_names = self.numeric_columns
+
+        elif not isinstance(column_names, list):
+                raise ValueError("column_names must be a list")
+        for col in column_names:
+            if col not in self.numeric_columns:
+                raise ValueError(f"Column name {col} does not exist or is not numerical")
+        else:
+            column_names = [col for col in column_names if col in self.numeric_columns]
+            
+        limits = {}
+        for name in column_names:
+            try:
+                limits[name] = [round(self.lower_limit_dict[name], decimal), round(self.upper_limit_dict[name], decimal)]
+            except KeyError:
+                return f"Column name {name} does not exist or is not numeric"
+
+        return limits
 
     
     def get_outliers(self, column_name, styler=True):

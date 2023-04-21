@@ -12,12 +12,12 @@ You can install MGD_Outliers using pip:
 
 To use the Outliers class in MGD_Outliers, you first need to import the package:
 
-    import MGD_Outliers
+    from MGD_Outliers import Outliers
     
 
 Then, you can create an instance of the Outliers class and pass your data to it:
 
-    outliers = MGD_Outliers.Outliers(data)
+    outliers = Outliers(data)
  
 
 Once you have an instance of the Outliers class, you can use its methods to detect and analyze outliers. For example, you can use the detect_outliers method to detect outliers in the data:

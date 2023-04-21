@@ -160,7 +160,7 @@ class Outliers:
 
         except Exception as e:
             return f"Error occurred in plot_outlier_count(): {e}"
-            
+
 
     def get_outlier_proportion(self, column_name_list=None, decimal=2):
         try:
@@ -174,3 +174,26 @@ class Outliers:
             
         except Exception as e:
             return f"Error occurred in get_outlier_proportion(): {e}"
+
+    def drop_outliers(self, column_names=None):
+        if column_names is None:
+            column_names=self.numeric_columns
+        elif not isinstance(column_names, list):
+                    raise ValueError("column_names must be a list")
+        for col in column_names:
+            if col not in self.numeric_columns:
+                raise ValueError(f"Column name {col} does not exist or is not numerical")
+        else:
+            column_names = [col for col in column_names if col in self.numeric_columns]
+
+        index=[]
+
+        for name in column_names:
+            filtered_df = self.get_outliers(name, styler=False)
+            if isinstance(filtered_df, pd.DataFrame):
+                index = index + list(filtered_df.index)
+        
+        no_outlier_data=self.data.drop(index=np.unique(index))
+        return no_outlier_data
+
+        

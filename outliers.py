@@ -49,7 +49,7 @@ class Outliers:
             if key in column_names:
                 iqr_dict[key]=value
         return pd.Series(iqr_dict)
-        
+
 
     def get_limits(self, column_names=None, decimal=4):
         try:
@@ -100,30 +100,30 @@ class Outliers:
             
             
 
-    def get_outliers_count(self, column_names=None):
-        try:
-            if column_names is None:
-                column_names = self.numeric_columns
-            else:
-                if not isinstance(column_names, list):
-                    raise ValueError("column_names must be a list")
-                for col in column_names:
-                    if col not in self.numeric_columns:
-                        raise ValueError(f"Column name {col} does not exist or is not numerical")
+    def get_outlier_count(self, column_names=None):
+        
+        if column_names is None:
+            column_names = self.numeric_columns
 
-            outlier_counts = {}
-            for name in column_names:
-                filtered_df = self.get_outliers(name, styler=False)
-                if isinstance(filtered_df, pd.DataFrame):
-                    outlier_counts[name] = filtered_df.shape[0]
+        elif not isinstance(column_names, list):
+                raise ValueError("column_names must be a list")
+        for col in column_names:
+            if col not in self.numeric_columns:
+                raise ValueError(f"Column name {col} does not exist or is not numerical")
+        else:
+            column_names = [col for col in column_names if col in self.numeric_columns]
 
-            if not outlier_counts:
-                return "No outlier found for given columns"
 
-            return pd.Series(outlier_counts)
+        outlier_counts = {}
+        for name in column_names:
+            filtered_df = self.get_outliers(name, styler=False)
+            if isinstance(filtered_df, pd.DataFrame):
+                outlier_counts[name] = filtered_df.shape[0]
 
-        except Exception as e:
-            return f"Error occurred in get_outliers_count(): {e}"
+        if not outlier_counts:
+            return "No outlier found for given columns"
+
+        return pd.Series(outlier_counts)
     
     def plot_outliers_count(self, column_names=None, figsize=(10, 8), threshold_percent=5):
         

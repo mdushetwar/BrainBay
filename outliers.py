@@ -32,21 +32,24 @@ class Outliers:
             return f"Error occurred in fit(): {e}"
 
     def get_iqr(self, column_names=None):
-        try:
-            if column_names is None:
-                return pd.Series(self.iqr)
-            else:
-                if not set(column_names).issubset(set(self.numeric_columns)):
-                    return f"Error: Invalid column names provided. Please provide column names that are numerical and exist in the dataset: {self.numeric_columns.tolist()}"
+        
+        if column_names is None:
+            column_names = self.numeric_columns
 
-                iqr_dict={}
-                for key, value in self.iqr.items():
-                    if key in column_names:
-                        iqr_dict[key]=value
-                return pd.Series(iqr_dict)
-
-        except Exception as e:
-            return f"Error occurred in get_iqr(): {e}"
+        elif not isinstance(column_names, list):
+                raise ValueError("column_names must be a list")
+        for col in column_names:
+            if col not in self.numeric_columns:
+                raise ValueError(f"Column name {col} does not exist or is not numerical")
+        else:
+            column_names = [col for col in column_names if col in self.numeric_columns]
+        
+        iqr_dict={}
+        for key, value in self.iqr.items():
+            if key in column_names:
+                iqr_dict[key]=value
+        return pd.Series(iqr_dict)
+        
 
     def get_limits(self, column_names=None, decimal=4):
         try:

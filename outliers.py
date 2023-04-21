@@ -70,55 +70,97 @@ class Outliers:
             return f"Error occurred in get_limits(): {e}"
 
     
-    def get_outliers(self, column_name):
+    def get_outliers(self, column_name, styler=True):
         
         try:
+
             if column_name not in self.numeric_columns:
                 return f"Column name '{column_name}' is either not numeric or does not exist in the dataset"
 
             try:
                 filtered_df = self.data[(self.data[column_name] < self.lower_limit_dict[column_name]) |
-                                         (self.data[column_name] > self.upper_limit_dict[column_name])]
+                                        (self.data[column_name] > self.upper_limit_dict[column_name])]
 
                 # Highlight filtered column in the resulting filtered_df
-                filtered_df = filtered_df.style.applymap(lambda x: 'background-color: yellow', subset=pd.IndexSlice[:, [column_name]])
+                filtered_df_style = filtered_df.style.applymap(lambda x: 'background-color: yellow', subset=pd.IndexSlice[:, [column_name]])
 
-                return filtered_df
+                if styler==True:
+                    return filtered_df_style
+                elif styler==False:
+                    return filtered_df
+
             except Exception as e:
                 return f"Error occurred in filter_outlier(): {e}"
 
         except Exception as e:
             return f"Error occurred in filter_outlier(): {e}"
-    
-    def plot_outlier_count(self, column_name_list=None, figsize=(10,8)):
+            
+            
+
+    def get_outliers_count(self, column_names=None):
         try:
-            if column_name_list is None:
-                column_name_list = self.numeric_columns
+            if column_names is None:
+                column_names = self.numeric_columns
             else:
-                column_name_list = [col for col in column_name_list if col in self.numeric_columns]
+                if not isinstance(column_names, list):
+                    raise ValueError("column_names must be a list")
+                for col in column_names:
+                    if col not in self.numeric_columns:
+                        raise ValueError(f"Column name {col} does not exist or is not numerical")
 
-            for name in column_name_list:
-                filtered_df = self.filter_outlier(name)
+            outlier_counts = {}
+            for name in column_names:
+                filtered_df = self.get_outliers(name, styler=False)
                 if isinstance(filtered_df, pd.DataFrame):
-                    self.outlier_counts[name] = filtered_df.shape[0]
+                    outlier_counts[name] = filtered_df.shape[0]
 
-            if not self.outlier_counts:
+            if not outlier_counts:
+                return "No outlier found for given columns"
+
+            return pd.Series(outlier_counts)
+
+        except Exception as e:
+            return f"Error occurred in get_outliers_count(): {e}"
+    
+    def plot_outliers_count(self, column_names=None, figsize=(10, 8), threshold_percent=5):
+        
+        try:
+            if column_names is None:
+                column_names = self.numeric_columns
+            
+            elif not isinstance(column_names, list):
+                    raise ValueError("column_names must be a list")
+            for col in column_names:
+                if col not in self.numeric_columns:
+                    raise ValueError(f"Column name {col} does not exist or is not numerical")
+            else:
+                column_names = [col for col in column_names if col in self.numeric_columns]
+            
+            outlier_counts={}
+            for name in column_names:
+                filtered_df = self.get_outliers(name, styler=False)
+                if isinstance(filtered_df, pd.DataFrame):
+                    outlier_counts[name] = filtered_df.shape[0]
+
+            if not outlier_counts:
                 return "No outlier found for given columns"
 
             plt.figure(figsize=figsize)
-            ax = sns.barplot(x=list(self.outlier_counts.keys()), y=list(self.outlier_counts.values()))
+            ax = sns.barplot(x=list(outlier_counts.keys()), y=list(outlier_counts.values()))
+            plt.axhline(int(self.data.shape[0]*threshold_percent/100), linestyle='--', color='r')
             plt.title('Outlier counts'.title(), fontsize=15, fontweight='bold')
             plt.xticks(rotation=90)
-            plt.ylim(top=max(self.outlier_counts.values())*1.1) # set y-axis limit to fit the text annotations
+            plt.ylim(top=max(outlier_counts.values())*1.1) # set y-axis limit to fit the text annotations
 
             # add text annotations above each bar
-            for i, v in enumerate(self.outlier_counts.values()):
-                ax.text(i, v+max(self.outlier_counts.values())*0.05, str(v), color='black', ha='center', fontsize=10, fontweight='bold')
+            for i, v in enumerate(outlier_counts.values()):
+                ax.text(i, v+max(outlier_counts.values())*0.05, str(v), color='black', ha='center', fontsize=10, fontweight='bold')
 
             plt.show()
 
         except Exception as e:
             return f"Error occurred in plot_outlier_count(): {e}"
+            
 
     def get_outlier_proportion(self, column_name_list=None, decimal=2):
         try:

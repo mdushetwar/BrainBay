@@ -189,6 +189,10 @@ class Outliers:
         """
         Returns a pandas dataframe with the outliers of a given column.
 
+        Note: When returning a styler object, the user may need to have an environment with the required dependencies, 
+        such as Jinja2, to properly view the styled dataframe. If the user does not have these dependencies, 
+        they may see an unstyled version of the dataframe or an error message.
+
         Parameters
         ------------
             column_name (str): The name of the column to filter outliers for.

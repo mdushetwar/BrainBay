@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import jinja2
 
 
-class Outliers:
+class OutlierNinja:
 
     """
     A class for detecting and handling outliers in a pandas DataFrame.

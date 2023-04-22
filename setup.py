@@ -7,7 +7,7 @@ here = os.path.abspath(os.path.dirname(__file__))
 with codecs.open(os.path.join(here, "README.md"), encoding="utf-8") as fh:
     long_description = "\n" + fh.read()
 
-VERSION = '0.1.0'
+VERSION = '0.1.1'
 DESCRIPTION = 'MGD_Outliers is a Python package for identifying and visualizing outliers in a DataFrame.'
 
 
@@ -22,7 +22,7 @@ setup(
     long_description=long_description,
     packages=find_packages(),
     license='Apache License 2.0',
-    install_requires=['numpy', 'pandas', 'matplotlib', 'seaborn'],
+    install_requires=['numpy', 'pandas', 'matplotlib', 'seaborn', 'jinja2'],
     keywords=['python', 'dataframe', 'outlier', 'outliers', 'inter quartile range', 'plot outliers', 'count outliers', 'data processing', 'drop outliers'],
     classifiers=[
         "Programming Language :: Python :: 3",

@@ -185,7 +185,7 @@ class OutlierNinja:
         return limits
 
     
-    def get_outliers(self, column_name, styler=True):
+    def detect_outliers(self, column_name, styler=True):
 
         """
         Returns a pandas dataframe with the outliers of a given column.

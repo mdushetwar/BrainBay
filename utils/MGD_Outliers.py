@@ -245,7 +245,7 @@ class OutlierNinja:
             
             
 
-    def get_outliers_count(self, column_names=None, kind='num', decimal=2):
+    def get_outlier_count(self, column_names=None, kind='num', decimal=2):
 
         """
         Returns a Pandas Series with the count or proportion of outliers in each specified column.

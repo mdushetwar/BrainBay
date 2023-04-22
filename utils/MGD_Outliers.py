@@ -216,8 +216,8 @@ class OutlierNinja:
             >>> from MGD_Outliers import Outliers
             >>> outliers = Outliers()
             >>> outliers.fit(data)
-            >>> outliers.get_outliers('age')
-            >>> outliers.get_outliers('age', styler=False)
+            >>> outliers.detect_outliers('age')
+            >>> outliers.detect_outliers('age', styler=False)
 
         """
         
@@ -278,8 +278,8 @@ class OutlierNinja:
             >>> from MGD_Outliers import Outliers
             >>> outliers = Outliers()
             >>> outliers.fit(data)
-            >>> outliers.get_outliers('age')
-            >>> outliers.get_outliers('age', styler=False)
+            >>> outliers.get_outlier_count()
+            >>> outliers.get_outlier_count(['age'])
 
         """
         
@@ -297,7 +297,7 @@ class OutlierNinja:
 
         outlier_counts = {}
         for name in column_names:
-            filtered_df = self.get_outliers(name, styler=False)
+            filtered_df = self.detect_outliers(name, styler=False)
             if isinstance(filtered_df, pd.DataFrame):
                 outlier_counts[name] = filtered_df.shape[0]
 
@@ -363,7 +363,7 @@ class OutlierNinja:
 
         outlier_counts={}
         for name in column_names:
-            filtered_df = self.get_outliers(name, styler=False)
+            filtered_df = self.detect_outliers(name, styler=False)
             if isinstance(filtered_df, pd.DataFrame):
                 outlier_counts[name] = filtered_df.shape[0]
 
@@ -430,7 +430,7 @@ class OutlierNinja:
         index=[]
 
         for name in column_names:
-            filtered_df = self.get_outliers(name, styler=False)
+            filtered_df = self.detect_outliers(name, styler=False)
             if isinstance(filtered_df, pd.DataFrame):
                 index = index + list(filtered_df.index)
         

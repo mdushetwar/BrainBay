@@ -7,8 +7,8 @@ here = os.path.abspath(os.path.dirname(__file__))
 with codecs.open(os.path.join(here, "README.md"), encoding="utf-8") as fh:
     long_description = "\n" + fh.read()
 
-VERSION = '0.1.1'
-DESCRIPTION = 'MGD_Outliers is a Python package for identifying and visualizing outliers in a DataFrame.'
+VERSION = '0.1.3'
+DESCRIPTION = 'MGD_Outliers is a Pypyththon package for identifying and visualizing outliers in a DataFrame.'
 
 
 # Setting up

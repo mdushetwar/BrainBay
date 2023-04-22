@@ -2,7 +2,7 @@
 MGD_Outliers is an open-source Python package for detecting and analyzing outliers in data. The package provides a class, Outliers, which can be used to detect outliers in numerical data, and provides several methods to analyze and visualize the detected outliers.
 
 # Current version
- version 0.1.1
+ version 0.1.3
 
 # Installation
 

@@ -18,7 +18,7 @@ To use the OutlierNinja class in MGD_Outliers, you first need to import the pack
     from MGD_Outliers import OutlierNinja
     
 
-Then, you can create an instance of the OutlierNinja class:
+Then, you have to create an instance of the OutlierNinja class:
 
     outliers = OutlierNinja(limit_factor=1.5)   # 1.5 is a default value, you can change it as per your project requirement
  

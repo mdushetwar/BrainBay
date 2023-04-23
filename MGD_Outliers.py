@@ -27,9 +27,9 @@ class OutlierNinja:
         limit_factor (float, optional): The threshold value to use for identifying outliers based on the IQR.
         """
 
-        self.limit_factor = limit_factor
+        self.limit_factor_ = limit_factor
         self.__data = None
-        self.numeric_columns = None
+        self.numeric_columns_ = None
         self.__lower_limit_dict = {}
         self.__upper_limit_dict = {}
         self.__iqr = {}
@@ -66,13 +66,13 @@ class OutlierNinja:
 
         try:
             self.__data = data 
-            self.numeric_columns = self.__data.select_dtypes(include=[np.number]).columns
+            self.numeric_columns_ = self.__data.select_dtypes(include=[np.number]).columns
             
-            for col in self.numeric_columns:
+            for col in self.numeric_columns_:
                 q1, q3 = self.__data[col].quantile([0.25, 0.75])
                 val_iqr = q3 - q1
-                self.__lower_limit_dict[col] = q1 - self.limit_factor * val_iqr
-                self.__upper_limit_dict[col] = q3 + self.limit_factor * val_iqr
+                self.__lower_limit_dict[col] = q1 - self.limit_factor_ * val_iqr
+                self.__upper_limit_dict[col] = q3 + self.limit_factor_ * val_iqr
                 self.__iqr[col] = val_iqr
 
             return 'Upper and lower limits identified successfully!'
@@ -111,15 +111,15 @@ class OutlierNinja:
 
         
         if column_names is None:
-            column_names = self.numeric_columns
+            column_names = self.numeric_columns_
 
         elif not isinstance(column_names, list):
                 raise ValueError("column_names must be a list")
         for col in column_names:
-            if col not in self.numeric_columns:
+            if col not in self.numeric_columns_:
                 raise ValueError(f"Column name {col} does not exist or is not numerical")
         else:
-            column_names = [col for col in column_names if col in self.numeric_columns]
+            column_names = [col for col in column_names if col in self.numeric_columns_]
         
         iqr_dict={}
         for key, value in self.__iqr.items():
@@ -165,15 +165,15 @@ class OutlierNinja:
         """
         
         if column_names is None:
-            column_names = self.numeric_columns
+            column_names = self.numeric_columns_
 
         elif not isinstance(column_names, list):
                 raise ValueError("column_names must be a list")
         for col in column_names:
-            if col not in self.numeric_columns:
+            if col not in self.numeric_columns_:
                 raise ValueError(f"Column name {col} does not exist or is not numerical")
         else:
-            column_names = [col for col in column_names if col in self.numeric_columns]
+            column_names = [col for col in column_names if col in self.numeric_columns_]
             
         limits = {}
         for name in column_names:
@@ -224,7 +224,7 @@ class OutlierNinja:
         if not isinstance(column_name, str):
                 raise ValueError("column_name must be a single string")
         
-        if column_name not in self.numeric_columns:
+        if column_name not in self.numeric_columns_:
             raise ValueError(f"Column name {column_name} does not exist or is not numerical")
 
     
@@ -284,15 +284,15 @@ class OutlierNinja:
         """
         
         if column_names is None:
-            column_names = self.numeric_columns
+            column_names = self.numeric_columns_
 
         elif not isinstance(column_names, list):
                 raise ValueError("column_names must be a list")
         for col in column_names:
-            if col not in self.numeric_columns:
+            if col not in self.numeric_columns_:
                 raise ValueError(f"Column name {col} does not exist or is not numerical")
         else:
-            column_names = [col for col in column_names if col in self.numeric_columns]
+            column_names = [col for col in column_names if col in self.numeric_columns_]
 
 
         outlier_counts = {}
@@ -351,15 +351,15 @@ class OutlierNinja:
         '''
         
         if column_names is None:
-            column_names = self.numeric_columns
+            column_names = self.numeric_columns_
 
         elif not isinstance(column_names, list):
                 raise ValueError("column_names must be a list")
         for col in column_names:
-            if col not in self.numeric_columns:
+            if col not in self.numeric_columns_:
                 raise ValueError(f"Column name {col} does not exist or is not numerical")
         else:
-            column_names = [col for col in column_names if col in self.numeric_columns]
+            column_names = [col for col in column_names if col in self.numeric_columns_]
 
         outlier_counts={}
         for name in column_names:
@@ -418,14 +418,14 @@ class OutlierNinja:
         '''
 
         if column_names is None:
-            column_names=self.numeric_columns
+            column_names=self.numeric_columns_
         elif not isinstance(column_names, list):
                     raise ValueError("column_names must be a list")
         for col in column_names:
-            if col not in self.numeric_columns:
+            if col not in self.numeric_columns_:
                 raise ValueError(f"Column name {col} does not exist or is not numerical")
         else:
-            column_names = [col for col in column_names if col in self.numeric_columns]
+            column_names = [col for col in column_names if col in self.numeric_columns_]
 
         index=[]
 
